@@ -77,3 +77,16 @@
   '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
+
+
+
+
+
+
+;; Certain fileextentions should result to certain modes
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.plt\\'" . shell-script-mode))
+(add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
