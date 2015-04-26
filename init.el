@@ -1,3 +1,73 @@
+
+
+;; Nonediting things
+
+
+
+;; Packet manager
+;; Found here: http://stackoverflow.com/a/10093312
+
+; list the packages you want
+(setq package-list '(markdown-mode))
+
+; list the repositories containing them
+(setq package-archives '(("elpa" . "http://tromey.com/elpa/")
+                         ("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")))
+
+; activate all the packages (in particular autoloads)
+(package-initialize)
+
+; fetch the list of packages available 
+(unless package-archive-contents
+  (package-refresh-contents))
+
+; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
+
+
+
+
+
+
+
+
+
+
+;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
+(custom-set-variables
+  '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
+  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
+;; create the autosave dir if necessary, since emacs won't.
+(make-directory "~/.emacs.d/autosaves/" t)
+
+
+
+
+;; when started, emacs should default to markdown mode and an empty document
+;; found here: http://emacsredux.com/blog/2014/07/25/configure-the-scratch-buffers-mode/
+(setq inhibit-splash-screen t)
+(setq initial-major-mode 'markdown-mode)
+(setq initial-scratch-message nil)
+
+;; Certain fileextentions should result to certain modes
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.plt\\'" . shell-script-mode))
+(add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
+
+
+
+
+
+
+
+;; Editing things
+
 ;; unbind things
 ;;at some point I should simply unbind every default keybinding
 (global-unset-key (kbd "C-x C-s"))
@@ -68,25 +138,3 @@
 
 
 
-
-
-
-;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
-(custom-set-variables
-  '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
-  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
-;; create the autosave dir if necessary, since emacs won't.
-(make-directory "~/.emacs.d/autosaves/" t)
-
-
-
-
-
-
-;; Certain fileextentions should result to certain modes
-(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.plt\\'" . shell-script-mode))
-(add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
