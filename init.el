@@ -61,48 +61,6 @@
 (add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
 
 
-
-
-
-
-
-;; Editing things
-
-;; unbind things
-;;at some point I should simply unbind every default keybinding
-(global-unset-key (kbd "C-x C-s"))
-(global-unset-key (kbd "C-x C-f"))
-(global-unset-key (kbd "C-s"))
-(global-unset-key (kbd "M-w"))
-(global-unset-key (kbd "C-y"))
-(global-unset-key (kbd "M-y"))
-
-;; some normal stuff
-(global-set-key (kbd "C-w") 'delete-window)
-(global-set-key (kbd "C-S-w") 'delete-other-windows)
-(global-set-key (kbd "C-o") 'find-file)
-(global-set-key (kbd "C-s") 'save-buffer)
-(global-set-key (kbd "C-S-s") 'write-file)
-(global-set-key (kbd "C-z") 'undo-tree-undo)
-(global-set-key (kbd "C-S-z") 'undo-tree-redo)
-(global-set-key (kbd "C-c") 'kill-ring-save)
-(global-set-key (kbd "C-v") 'yank)
-(global-set-key (kbd "C-S-v") 'yank-pop)
-(global-set-key (kbd "C-n") 'split-window-horizontally)
-(global-set-key (kbd "C-S-n") 'split-window-vertically)
-
-;; Incremental search (made it up myself)
-(global-set-key (kbd "C-f") 'isearch-forward)
-(global-set-key (kbd "C-S-f") 'isearch-forward-regexp)
-(define-key isearch-mode-map (kbd "C-f") 'isearch-repeat-forward)
-(define-key isearch-mode-map (kbd "C-S-f") 'isearch-repeat-backward)
-(setq isearch-lazy-highlight nil)
-
-
-
-
-
-
 ;; emacsd-tile.el -- tiling windows for emacs
 ;; Found here: https://gist.github.com/mariusae/287633
 ;; Short blogpost here: http://monkey.org/~marius/emacs-as-a-tiling-window-manager.html
@@ -120,21 +78,82 @@
         (set-window-buffer other-window this-buffer)
         (set-window-start  this-window  other-start)
         (set-window-start  other-window this-start)))))
- 
-(global-set-key (kbd "M-S-<down>") (lambda () (interactive) (swap-with 'down)))
-(global-set-key (kbd "M-S-<up>") (lambda () (interactive) (swap-with 'up)))
-(global-set-key (kbd "M-S-<left>") (lambda () (interactive) (swap-with 'left)))
-(global-set-key (kbd "M-S-<right>") (lambda () (interactive) (swap-with 'right)))
 
-(global-set-key (kbd "M-C-S-<down>") (lambda () (interactive) (enlarge-window 1)))
-(global-set-key (kbd "M-C-S-<up>") (lambda () (interactive) (enlarge-window -1)))
-(global-set-key (kbd "M-C-S-<left>") (lambda () (interactive) (enlarge-window -1 t)))
-(global-set-key (kbd "M-C-S-<right>") (lambda () (interactive) (enlarge-window 1 t)))
+;; I learned about how to define a minor mode here: http://stackoverflow.com/a/3116381
+;; Tiling Minor Mode
+(define-minor-mode tiling-mode
+  "Tiling mode, so emacs windows can be managed similar to X windows with i3."
+  ;; The initial value - Set to 1 to enable by default
+  nil
+  ;; The indicator for the mode line.
+  " tile"
+  ;; The minor mode keymap
+  `(
+    ;; (,(kbd "v") . split-window-vertically)
+    ;; (,(kbd "h") . split-window-horizontally)
 
-(global-set-key (kbd "M-<down>") 'windmove-down)
-(global-set-key (kbd "M-<up>") 'windmove-up)
-(global-set-key (kbd "M-<left>") 'windmove-left)
-(global-set-key (kbd "M-<right>") 'windmove-right)
+    (,(kbd "<left>") . windmove-left)
+    (,(kbd "<right>") . windmove-right)
+    (,(kbd "<down>") . windmove-down)
+    (,(kbd "<up>") . windmove-up)
+
+    (,(kbd "M-<right>") . (lambda () (interactive) (swap-with 'right)))
+    (,(kbd "M-<left>") . (lambda () (interactive) (swap-with 'left)))
+    (,(kbd "M-<down>") . (lambda () (interactive) (swap-with 'down)))
+    (,(kbd "M-<up>") . (lambda () (interactive) (swap-with 'up)))
+
+    ;;(,(kbd "S-<right>") . (lambda () (interactive) (enlarge-window 1 t)))
+    ;;(,(kbd "S-<left>") . (lambda () (interactive) (enlarge-window -1 t)))
+    ;;(,(kbd "S-<down>") . (lambda () (interactive) (enlarge-window 1)))
+    ;;(,(kbd "S-<up>") . (lambda () (interactive) (enlarge-window -1)))
+
+    )
+   ;; Make mode global rather than buffer local
+   :global 1
+)
+
+
+
+
+
+
+;; Editing things
+
+;; unbind things
+;;at some point I should simply unbind every default keybinding
+(global-unset-key (kbd "C-x C-s"))
+(global-unset-key (kbd "C-x C-f"))
+(global-unset-key (kbd "C-s"))
+(global-unset-key (kbd "M-w"))
+(global-unset-key (kbd "C-y"))
+(global-unset-key (kbd "M-y"))
+(global-unset-key (kbd "M-<down>"))
+(global-unset-key (kbd "M-<up>"))
+(global-unset-key (kbd "M-<right>"))
+(global-unset-key (kbd "M-<left>"))
+
+;; some normal stuff
+(global-set-key (kbd "C-w") 'delete-window)
+(global-set-key (kbd "C-S-w") 'delete-other-windows)
+(global-set-key (kbd "C-o") 'find-file)
+(global-set-key (kbd "C-s") 'save-buffer)
+(global-set-key (kbd "C-S-s") 'write-file)
+(global-set-key (kbd "C-z") 'undo-tree-undo)
+(global-set-key (kbd "C-S-z") 'undo-tree-redo)
+(global-set-key (kbd "C-c") 'kill-ring-save)
+(global-set-key (kbd "C-v") 'yank)
+(global-set-key (kbd "C-S-v") 'yank-pop)
+(global-set-key (kbd "C-t") 'tiling-mode)
+
+;; Incremental search (made it up myself)
+(global-set-key (kbd "C-f") 'isearch-forward)
+(global-set-key (kbd "C-S-f") 'isearch-forward-regexp)
+(define-key isearch-mode-map (kbd "C-f") 'isearch-repeat-forward)
+(define-key isearch-mode-map (kbd "C-S-f") 'isearch-repeat-backward)
+(setq isearch-lazy-highlight nil)
+
+
+
 
 
 
