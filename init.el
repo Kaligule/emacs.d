@@ -92,8 +92,8 @@
   " tile"
   ;; The minor mode keymap
   `(
-    ;; (,(kbd "v") . split-window-vertically)
-    ;; (,(kbd "h") . split-window-horizontally)
+    (,(kbd "M-v") . split-window-vertically)
+    (,(kbd "M-h") . split-window-horizontally)
 
     (,(kbd "<left>") . windmove-left)
     (,(kbd "<right>") . windmove-right)
@@ -105,10 +105,10 @@
     (,(kbd "M-<down>") . (lambda () (interactive) (swap-with 'down)))
     (,(kbd "M-<up>") . (lambda () (interactive) (swap-with 'up)))
 
-    ;;(,(kbd "S-<right>") . (lambda () (interactive) (enlarge-window 1 t)))
-    ;;(,(kbd "S-<left>") . (lambda () (interactive) (enlarge-window -1 t)))
-    ;;(,(kbd "S-<down>") . (lambda () (interactive) (enlarge-window 1)))
-    ;;(,(kbd "S-<up>") . (lambda () (interactive) (enlarge-window -1)))
+    (,(kbd "S-<right>") . (lambda () (interactive) (enlarge-window 1 t)))
+    (,(kbd "S-<left>") . (lambda () (interactive) (enlarge-window -1 t)))
+    (,(kbd "S-<down>") . (lambda () (interactive) (enlarge-window 1)))
+    (,(kbd "S-<up>") . (lambda () (interactive) (enlarge-window -1)))
 
     )
    ;; Make mode global rather than buffer local
