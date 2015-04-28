@@ -9,6 +9,7 @@
 
 ; list the packages you want
 (setq package-list '(markdown-mode))
+(setq package-list '(undo-tree))
 
 ; list the repositories containing them
 (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
@@ -34,6 +35,8 @@
 
 
 
+;; undo tree always
+(global-undo-tree-mode 1)
 
 
 ;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
