@@ -10,10 +10,13 @@
 ; list the packages you want
 (setq package-list '(markdown-mode))
 (setq package-list '(undo-tree))
+(setq package-list '(comment-dwim-2w))
+(setq package-list '(expand-region))
 
 ; list the repositories containing them
-(setq package-archives '(("elpa" . "http://tromey.com/elpa/")
-                         ("gnu" . "http://elpa.gnu.org/packages/")
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+			 ("elpa" . "http://tromey.com/elpa/")
+			 ("melpa" . "http://melpa.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")))
 
 ; activate all the packages (in particular autoloads)
@@ -37,6 +40,9 @@
 
 ;; undo tree always
 (global-undo-tree-mode 1)
+
+;; disable toolbar (wich provides buttons for save, open...). Use your keyboard.
+(tool-bar-mode -1)
 
 
 ;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
@@ -92,18 +98,18 @@
   " tile"
   ;; The minor mode keymap
   `(
-    (,(kbd "M-v") . split-window-vertically)
-    (,(kbd "M-h") . split-window-horizontally)
+    (,(kbd "C-v") . split-window-vertically)
+    (,(kbd "C-h") . split-window-horizontally)
 
     (,(kbd "<left>") . windmove-left)
     (,(kbd "<right>") . windmove-right)
     (,(kbd "<down>") . windmove-down)
     (,(kbd "<up>") . windmove-up)
 
-    (,(kbd "M-<right>") . (lambda () (interactive) (swap-with 'right)))
-    (,(kbd "M-<left>") . (lambda () (interactive) (swap-with 'left)))
-    (,(kbd "M-<down>") . (lambda () (interactive) (swap-with 'down)))
-    (,(kbd "M-<up>") . (lambda () (interactive) (swap-with 'up)))
+    (,(kbd "C-<right>") . (lambda () (interactive) (swap-with 'right)))
+    (,(kbd "C-<left>") . (lambda () (interactive) (swap-with 'left)))
+    (,(kbd "C-<down>") . (lambda () (interactive) (swap-with 'down)))
+    (,(kbd "C-<up>") . (lambda () (interactive) (swap-with 'up)))
 
     (,(kbd "S-<right>") . (lambda () (interactive) (enlarge-window 1 t)))
     (,(kbd "S-<left>") . (lambda () (interactive) (enlarge-window -1 t)))
@@ -134,6 +140,7 @@
 (global-unset-key (kbd "M-<up>"))
 (global-unset-key (kbd "M-<right>"))
 (global-unset-key (kbd "M-<left>"))
+(global-unset-key (kbd "C-_"))
 
 ;; some normal stuff
 (global-set-key (kbd "C-w") 'delete-window)
@@ -147,6 +154,11 @@
 (global-set-key (kbd "C-v") 'yank)
 (global-set-key (kbd "C-S-v") 'yank-pop)
 (global-set-key (kbd "C-t") 'tiling-mode)
+(global-set-key (kbd "C-#") 'comment-dwim-2)
+(global-set-key (kbd "C-a") 'er/expand-region)
+(global-set-key (kbd "C-S-a") 'er/contract-region)
+
+
 
 ;; Incremental search (made it up myself)
 (global-set-key (kbd "C-f") 'isearch-forward)
