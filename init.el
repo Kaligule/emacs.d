@@ -12,6 +12,7 @@
 (setq package-list '(undo-tree))
 (setq package-list '(comment-dwim-2w))
 (setq package-list '(expand-region))
+(setq package-list '(magit))
 
 ; list the repositories containing them
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -43,6 +44,9 @@
 
 ;; disable toolbar (wich provides buttons for save, open...). Use your keyboard.
 (tool-bar-mode -1)
+
+;; Magit
+(setq magit-last-seen-setup-instructions "1.4.0")
 
 
 ;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
@@ -123,6 +127,22 @@
 
 
 
+;; Move lines up and down
+;; Found here: http://www.emacswiki.org/emacs/MoveLine
+
+(defun move-line-up ()
+  (interactive)
+  (transpose-lines 1)
+  (forward-line -2))
+
+(defun move-line-down ()
+  (interactive)
+  (forward-line 1)
+  (transpose-lines 1)
+  (forward-line -1))
+
+(global-set-key (kbd "M-g") 'move-line-up)
+(global-set-key (kbd "M-h") 'move-line-down)
 
 
 
@@ -141,6 +161,7 @@
 (global-unset-key (kbd "M-<right>"))
 (global-unset-key (kbd "M-<left>"))
 (global-unset-key (kbd "C-_"))
+(global-unset-key (kbd "M-;"))
 
 ;; some normal stuff
 (global-set-key (kbd "C-w") 'delete-window)
@@ -149,6 +170,7 @@
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-S-s") 'write-file)
 (global-set-key (kbd "C-z") 'undo-tree-undo)
+(global-set-key (kbd "C-_") 'undo-tree-undo)
 (global-set-key (kbd "C-S-z") 'undo-tree-redo)
 (global-set-key (kbd "C-c") 'kill-ring-save)
 (global-set-key (kbd "C-v") 'yank)
