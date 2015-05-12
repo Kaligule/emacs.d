@@ -13,6 +13,12 @@
 (setq package-list '(comment-dwim-2w))
 (setq package-list '(expand-region))
 (setq package-list '(magit))
+(setq package-list '(helm))
+(setq package-list '(haskell-mode))
+(setq package-list '(hydra))
+
+
+
 
 ; list the repositories containing them
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -46,7 +52,7 @@
 (tool-bar-mode -1)
 
 ;; Magit
-(setq magit-last-seen-setup-instructions "1.4.0")
+;; (setq magit-last-seen-setup-instructions "1.4.0")
 
 
 ;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
@@ -73,6 +79,12 @@
 (add-to-list 'auto-mode-alist '("\\.plt\\'" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
 
+(defhydra hydra-zoom ()
+  "zoom"
+  ("+" text-scale-increase "in")
+  ("-" text-scale-decrease "out")
+  ("RET" nil "done" :color blue))
+(global-set-key (kbd "C-p") 'hydra-zoom/body)
 
 ;; emacsd-tile.el -- tiling windows for emacs
 ;; Found here: https://gist.github.com/mariusae/287633
@@ -127,6 +139,37 @@
 
 
 
+(require 'helm)
+(require 'helm-config)
+
+;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+;; (global-set-key (kbd "C-.") 'helm-command-prefix)
+(global-unset-key (kbd "C-x c"))
+
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+(define-key helm-map (kbd "C-S-i")  'helm-select-action) ; list actions using C-z
+
+(when (executable-find "curl")
+  (setq helm-google-suggest-use-curl-p t))
+
+(setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+      helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+      helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+      helm-ff-file-name-history-use-recentf t
+      helm-M-x-fuzzy-match                  t); fuzzy matching for helm-M-x
+
+
+(helm-mode 1)
+
+
+
+
+
+;; Editing things
+
 ;; Move lines up and down
 ;; Found here: http://www.emacswiki.org/emacs/MoveLine
 
@@ -156,7 +199,6 @@
 (global-set-key (kbd "<C-M-up>") 'move-line-up)
 (global-set-key (kbd "<C-M-down>") 'move-line-down)
 
-;; Editing things
 
 ;; unbind things
 ;;at some point I should simply unbind every default keybinding
@@ -176,19 +218,22 @@
 ;; some normal stuff
 (global-set-key (kbd "C-w") 'delete-window)
 (global-set-key (kbd "C-S-w") 'delete-other-windows)
-(global-set-key (kbd "C-o") 'find-file)
+(global-set-key (kbd "C-o") 'helm-find-files)
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-S-s") 'write-file)
 (global-set-key (kbd "C-z") 'undo-tree-undo)
 (global-set-key (kbd "C-_") 'undo-tree-undo)
 (global-set-key (kbd "C-S-z") 'undo-tree-redo)
 (global-set-key (kbd "C-c") 'kill-ring-save)
+;; (global-set-key (kbd "C-v") 'helm-show-kill-ring)
 (global-set-key (kbd "C-v") 'yank)
 (global-set-key (kbd "C-S-v") 'yank-pop)
 (global-set-key (kbd "C-t") 'tiling-mode)
 (global-set-key (kbd "C-#") 'comment-dwim-2)
 (global-set-key (kbd "C-a") 'er/expand-region)
 (global-set-key (kbd "C-S-a") 'er/contract-region)
+(global-set-key (kbd "C-l") 'goto-line)
+(global-set-key (kbd "M-x") 'helm-M-x)
 
 
 
@@ -198,6 +243,7 @@
 (define-key isearch-mode-map (kbd "C-f") 'isearch-repeat-forward)
 (define-key isearch-mode-map (kbd "C-S-f") 'isearch-repeat-backward)
 (setq isearch-lazy-highlight nil)
+
 
 
 
