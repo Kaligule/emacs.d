@@ -199,6 +199,9 @@
 (global-set-key (kbd "<C-M-up>") 'move-line-up)
 (global-set-key (kbd "<C-M-down>") 'move-line-down)
 
+;; Indentation
+;; No tabs, only spaces
+(setq-default indent-tabs-mode nil)
 
 ;; unbind things
 ;;at some point I should simply unbind every default keybinding
@@ -250,3 +253,31 @@
 
 
 
+;; Mode specific
+
+;; Haskell
+
+;; Indentation (must be enabled explicitly)
+;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+;;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
+(eval-after-load "align"
+  '(add-to-list 'align-rules-list
+                '(haskell-types
+                   (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                   (modes quote (haskell-mode literate-haskell-mode)))))
+(eval-after-load "align"
+  '(add-to-list 'align-rules-list
+                '(haskell-assignment
+                  (regexp . "\\(\\s-+\\)=\\s-+")
+                  (modes quote (haskell-mode literate-haskell-mode)))))
+(eval-after-load "align"
+  '(add-to-list 'align-rules-list
+                '(haskell-arrows
+                  (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                  (modes quote (haskell-mode literate-haskell-mode)))))
+(eval-after-load "align"
+  '(add-to-list 'align-rules-list
+                '(haskell-left-arrows
+                  (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                  (modes quote (haskell-mode literate-haskell-mode)))))
