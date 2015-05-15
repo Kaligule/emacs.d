@@ -84,7 +84,8 @@
   ("+" text-scale-increase "in")
   ("-" text-scale-decrease "out")
   ("RET" nil "done" :color blue))
-(global-set-key (kbd "C-p") 'hydra-zoom/body)
+(global-set-key (kbd "C-+") 'hydra-zoom/body)
+(global-set-key (kbd "C--") 'hydra-zoom/body)
 
 ;; emacsd-tile.el -- tiling windows for emacs
 ;; Found here: https://gist.github.com/mariusae/287633
@@ -258,6 +259,7 @@
 ;; Haskell
 
 ;; Indentation (must be enabled explicitly)
+;; Found here: https://wiki.haskell.org/Emacs/Indentation
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
@@ -281,3 +283,14 @@
                 '(haskell-left-arrows
                   (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
                   (modes quote (haskell-mode literate-haskell-mode)))))
+
+;; found here: https://wiki.haskell.org/Emacs/Inferior_Haskell_processes
+(require 'inf-haskell)
+(defhydra hydra-haskell-things ()
+  "haskell things"
+  ("l" inferior-haskell-load-file "load in ghci" :color  blue)
+  ("t" inferior-haskell-type "type" :color  blue)
+  ("i" inferior-haskell-info "info" :color  blue)
+  ("d" inferior-haskell-find-definition "definition" :color  blue)
+  ("RET" nil "done" :color blue))
+(global-set-key (kbd "C-P") 'hydra-haskell-things/body)
