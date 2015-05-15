@@ -7,15 +7,18 @@
 ;; Packet manager
 ;; Found here: http://stackoverflow.com/a/10093312
 
-; list the packages you want
-(setq package-list '(markdown-mode))
-(setq package-list '(undo-tree))
-(setq package-list '(comment-dwim-2w))
-(setq package-list '(expand-region))
-(setq package-list '(magit))
+;; list the packages you want
+;; Meta packages
 (setq package-list '(helm))
-(setq package-list '(haskell-mode))
 (setq package-list '(hydra))
+;; certain commands and functions
+(setq package-list '(magit))
+(setq package-list '(undo-tree))
+(setq package-list '(expand-region))
+(setq package-list '(comment-dwim-2w))
+;; Modes
+(setq package-list '(haskell-mode))
+(setq package-list '(markdown-mode))
 
 
 
@@ -105,38 +108,71 @@
         (set-window-start  this-window  other-start)
         (set-window-start  other-window this-start)))))
 
-;; I learned about how to define a minor mode here: http://stackoverflow.com/a/3116381
-;; Tiling Minor Mode
-(define-minor-mode tiling-mode
-  "Tiling mode, so emacs windows can be managed similar to X windows with i3."
-  ;; The initial value - Set to 1 to enable by default
-  nil
-  ;; The indicator for the mode line.
-  " tile"
-  ;; The minor mode keymap
-  `(
-    (,(kbd "C-v") . split-window-vertically)
-    (,(kbd "C-h") . split-window-horizontally)
+;; Nicer window management with hydra
+;; Found inspiration here: https://github.com/abo-abo/hydra/wiki/Window-Management
+(when (fboundp 'winner-mode)
+  (winner-mode 1))
+(require 'windmove)
 
-    (,(kbd "<left>") . windmove-left)
-    (,(kbd "<right>") . windmove-right)
-    (,(kbd "<down>") . windmove-down)
-    (,(kbd "<up>") . windmove-up)
+(defhydra hydra-window (:color red
+                        :hint nil)
+  "
+ Split: _v_ertical _h_orizontal
+Delete: _w_indow other _W_indows
+  Move: Arrowkeys
+  Size: Shift-Arrowkeys
+Frames: _f_rame
+  Misc: _u_ndo  _r_edo"
+  ("<right>" windmove-right)
+  ("<left>" windmove-left)
+  ("<up>" windmove-up)
+  ("<down>" windmove-down)
+  ("S-<right>" hydra-move-splitter-right)
+  ("S-<left>" hydra-move-splitter-left)
+  ("S-<up>" hydra-move-splitter-up)
+  ("S-<down>" hydra-move-splitter-down)
+  ("v" split-window-right)
+  ("h" split-window-below)
+  ;("t" transpose-frame "'")
+  ("u" winner-undo)
+  ("r" winner-redo) ;;Fixme, not working?
+  ("w" delete-window)
+  ("W" delete-other-windows :color blue)
+  ("f" new-frame :exit t)
+  ("RET" nil "done" :color blue))
 
-    (,(kbd "C-<right>") . (lambda () (interactive) (swap-with 'right)))
-    (,(kbd "C-<left>") . (lambda () (interactive) (swap-with 'left)))
-    (,(kbd "C-<down>") . (lambda () (interactive) (swap-with 'down)))
-    (,(kbd "C-<up>") . (lambda () (interactive) (swap-with 'up)))
+(defun hydra-move-splitter-left (arg)
+  "Move window splitter left."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'right))
+      (shrink-window-horizontally arg)
+    (enlarge-window-horizontally arg)))
 
-    (,(kbd "S-<right>") . (lambda () (interactive) (enlarge-window 1 t)))
-    (,(kbd "S-<left>") . (lambda () (interactive) (enlarge-window -1 t)))
-    (,(kbd "S-<down>") . (lambda () (interactive) (enlarge-window 1)))
-    (,(kbd "S-<up>") . (lambda () (interactive) (enlarge-window -1)))
+(defun hydra-move-splitter-right (arg)
+  "Move window splitter right."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'right))
+      (enlarge-window-horizontally arg)
+    (shrink-window-horizontally arg)))
 
-    )
-   ;; Make mode global rather than buffer local
-   :global 1
-)
+(defun hydra-move-splitter-up (arg)
+  "Move window splitter up."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'up))
+      (enlarge-window arg)
+    (shrink-window arg)))
+
+(defun hydra-move-splitter-down (arg)
+  "Move window splitter down."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'up))
+      (shrink-window arg)
+    (enlarge-window arg)))
+
 
 
 
@@ -220,8 +256,6 @@
 (global-unset-key (kbd "M-;"))
 
 ;; some normal stuff
-(global-set-key (kbd "C-w") 'delete-window)
-(global-set-key (kbd "C-S-w") 'delete-other-windows)
 (global-set-key (kbd "C-o") 'helm-find-files)
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-S-s") 'write-file)
@@ -232,7 +266,7 @@
 ;; (global-set-key (kbd "C-v") 'helm-show-kill-ring)
 (global-set-key (kbd "C-v") 'yank)
 (global-set-key (kbd "C-S-v") 'yank-pop)
-(global-set-key (kbd "C-t") 'tiling-mode)
+(global-set-key (kbd "C-w") 'hydra-window/body)
 (global-set-key (kbd "C-#") 'comment-dwim-2)
 (global-set-key (kbd "C-a") 'er/expand-region)
 (global-set-key (kbd "C-S-a") 'er/contract-region)
@@ -294,3 +328,4 @@
   ("d" inferior-haskell-find-definition "definition" :color  blue)
   ("RET" nil "done" :color blue))
 (global-set-key (kbd "C-P") 'hydra-haskell-things/body)
+
