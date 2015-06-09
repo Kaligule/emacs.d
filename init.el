@@ -1,4 +1,5 @@
-
+(defun display-startup-echo-area-message ()
+  (message "Leave: C-x C-c  Help: C-h C-h"))
 
 ;; Nonediting things
 
@@ -12,16 +13,15 @@
 (setq package-list '(helm))
 (setq package-list '(hydra))
 ;; certain commands and functions
+(setq package-list '(multiple-cursors)) ;doesn't seem to install
 (setq package-list '(magit))
 (setq package-list '(undo-tree))
 (setq package-list '(expand-region))
 (setq package-list '(comment-dwim-2w))
-;; Modes
+(setq package-list '(smartparens))
+;; Major-Modes
 (setq package-list '(haskell-mode))
 (setq package-list '(markdown-mode))
-
-
-
 
 ; list the repositories containing them
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -45,18 +45,70 @@
 
 
 
-
-
+;; cua mode makes copy and past like in every other editor
+(cua-mode 1)
 
 ;; undo tree always
 (global-undo-tree-mode 1)
 
-;; disable toolbar (wich provides buttons for save, open...). Use your keyboard.
+;; smartparens
+(smartparens-global-mode 1)
+
+;; show parenthesis
+;; found here: http://emacs-fu.blogspot.de/2009/01/balancing-your-parentheses.html
+(require 'paren)
+(show-paren-mode t)
+(setq show-paren-delay 0)
+(set-face-attribute 'show-paren-match nil :weight 'bold :background 'unspecified)
+(setq show-paren-style 'expression) ; alternatives are 'parenthesis' and 'mixed'
+
+
+(set-face-background 'show-paren-mismatch-face "red")
+(set-face-attribute 'show-paren-mismatch-face nil 
+                    :weight 'bold :underline t :overline nil :box t)
+
+
+
+;; disable toolbar (wich provides buttons for save, open...). Use your keyboard. TODO This doesn't seem to work
 (tool-bar-mode -1)
 
-;; Magit
-;; (setq magit-last-seen-setup-instructions "1.4.0")
+;; disable menu bar, which provides menues like "File", "Edit", "Options"...
+;; If you need the menu bar, you are lost, anyway.
+(menu-bar-mode -1)
 
+;; disable scroll bar
+(scroll-bar-mode -1)
+
+;; Magit
+(setq magit-last-seen-setup-instructions "1.4.0")
+
+
+
+;; Multicurser
+
+
+
+(require 'multiple-cursors)
+(defhydra hydra-multiple-cursors (:hint nil)
+"
+_C-y_  : next like this
+_C-S-y_: previos like this
+       _e_verything like this
+       split in _l_ines
+       _n_umbers
+       _s_ort regions
+       _r_everse regions
+"
+  ("C-y"     mc/mark-next-like-this)
+  ("C-S-y"   mc/mark-previous-like-this)
+  ("e"       mc/mark-all-like-this)
+  ("ä"       mc/mark-all-dwim)
+  ("l"       mc/edit-lines)
+  ("n"       mc/insert-numbers)
+  ("s"       mc/sort-regions)
+  ("r"       mc/reverse-regions)
+  ("RET"     nil "done" :color blue))
+(global-set-key (kbd "C-y") 'hydra-multiple-cursors/body)
 
 ;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
 (custom-set-variables
@@ -81,6 +133,15 @@
 (add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.plt\\'" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
+
+(defhydra hydra-switch-major-mode (:color blue)
+  "major mode"
+  ("h" haskell-mode "haskell")
+  ("m" markdown-mode "markdown")
+  ("t" text-mode "plaintext")
+  ("e" emacs-lisp-mode "elisp"))
+(global-unset-key (kbd "C-S-m"))
+(global-set-key (kbd "C-S-m") 'hydra-switch-major-mode/body)
 
 (defhydra hydra-zoom ()
   "zoom"
@@ -110,19 +171,22 @@
 
 ;; Nicer window management with hydra
 ;; Found inspiration here: https://github.com/abo-abo/hydra/wiki/Window-Management
-(when (fboundp 'winner-mode)
-  (winner-mode 1))
+
+;; I don't need winner at all I think
+;; (when (fboundp 'winner-mode)
+  ;; (winner-mode 1))
+
 (require 'windmove)
 
 (defhydra hydra-window (:color red
                         :hint nil)
   "
- Split: _v_ertical _h_orizontal
-Delete: _w_indow other _W_indows
-  Move: Arrowkeys
-  Size: Shift-Arrowkeys
-Frames: _f_rame
-  Misc: _u_ndo  _r_edo"
+  Split: _v_ertical _h_orizontal
+ Delete: _w_indow other _W_indows
+  Focus: Arrowkeys
+   Size: Shift-Arrowkeys
+ Frames: _f_rame
+Content: switch _b_uffer _o_pen "
   ("<right>" windmove-right)
   ("<left>" windmove-left)
   ("<up>" windmove-up)
@@ -131,14 +195,13 @@ Frames: _f_rame
   ("S-<left>" hydra-move-splitter-left)
   ("S-<up>" hydra-move-splitter-up)
   ("S-<down>" hydra-move-splitter-down)
-  ("v" split-window-right)
-  ("h" split-window-below)
-  ;("t" transpose-frame "'")
-  ("u" winner-undo)
-  ("r" winner-redo) ;;Fixme, not working?
+  ("h" split-window-right)
+  ("v" split-window-below)
   ("w" delete-window)
   ("W" delete-other-windows :color blue)
   ("f" new-frame :exit t)
+  ("b" switch-to-buffer)
+  ("o" helm-find-files)
   ("RET" nil "done" :color blue))
 
 (defun hydra-move-splitter-left (arg)
@@ -201,6 +264,21 @@ Frames: _f_rame
 
 (helm-mode 1)
 
+;; make backspace close helm
+;; found here: http://oremacs.com/2014/12/21/helm-backspace/
+(require 'helm)
+(defun helm-backspace ()
+  "Forward to `backward-delete-char'.
+On error (read-only), quit without selecting."
+  (interactive)
+  (condition-case nil
+      (backward-delete-char 1)
+    (error
+     (helm-keyboard-quit))))
+
+(define-key helm-map (kbd "DEL") 'helm-backspace)
+
+
 
 
 
@@ -245,9 +323,11 @@ Frames: _f_rame
 (global-unset-key (kbd "C-x C-s"))
 (global-unset-key (kbd "C-x C-f"))
 (global-unset-key (kbd "C-s"))
+(global-unset-key (kbd "C-r"))
 (global-unset-key (kbd "M-w"))
-(global-unset-key (kbd "C-y"))
+;; (global-unset-key (kbd "C-y"))
 (global-unset-key (kbd "M-y"))
+(global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "M-<down>"))
 (global-unset-key (kbd "M-<up>"))
 (global-unset-key (kbd "M-<right>"))
@@ -260,12 +340,11 @@ Frames: _f_rame
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-S-s") 'write-file)
 (global-set-key (kbd "C-z") 'undo-tree-undo)
-(global-set-key (kbd "C-_") 'undo-tree-undo)
 (global-set-key (kbd "C-S-z") 'undo-tree-redo)
-(global-set-key (kbd "C-c") 'kill-ring-save)
+(global-set-key (kbd "C-c") 'clipboard-kill-ring-save)
 ;; (global-set-key (kbd "C-v") 'helm-show-kill-ring)
-(global-set-key (kbd "C-v") 'yank)
-(global-set-key (kbd "C-S-v") 'yank-pop)
+;; (global-set-key (kbd "C-v") 'yank)
+;; (global-set-key (kbd "C-S-v") 'yank-pop)
 (global-set-key (kbd "C-w") 'hydra-window/body)
 (global-set-key (kbd "C-#") 'comment-dwim-2)
 (global-set-key (kbd "C-a") 'er/expand-region)
@@ -320,12 +399,17 @@ Frames: _f_rame
 
 ;; found here: https://wiki.haskell.org/Emacs/Inferior_Haskell_processes
 (require 'inf-haskell)
-(defhydra hydra-haskell-things ()
+(defhydra hydra-haskell-things (:color blue)
   "haskell things"
-  ("l" inferior-haskell-load-file "load in ghci" :color  blue)
-  ("t" inferior-haskell-type "type" :color  blue)
-  ("i" inferior-haskell-info "info" :color  blue)
-  ("d" inferior-haskell-find-definition "definition" :color  blue)
-  ("RET" nil "done" :color blue))
-(global-set-key (kbd "C-P") 'hydra-haskell-things/body)
+  ("l" inferior-haskell-load-file "load in ghci")
+  ("t" inferior-haskell-type "type")
+  ("i" inferior-haskell-info "info")
+  ("d" inferior-haskell-find-definition "definition")
+  ("RET" nil "done"))
+(global-set-key (kbd "C-S-p") 'hydra-haskell-things/body)
+
+;; found here: https://wiki.haskell.org/Emacs/Inferior_Haskell_processes
+(require 'haskell-interactive-mode)
+(require 'haskell-process)
+(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
