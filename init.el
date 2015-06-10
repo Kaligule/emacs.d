@@ -3,7 +3,10 @@
 
 ;; Nonediting things
 
-
+;; elsip files managed by me, not by elpa
+;; for more information see http://www.emacswiki.org/emacs/LoadPath
+(let ((default-directory "~/.emacs.d/myPackages/"))
+  (normal-top-level-add-subdirs-to-load-path))
 
 ;; Packet manager
 ;; Found here: http://stackoverflow.com/a/10093312
@@ -82,12 +85,7 @@
 ;; Magit
 (setq magit-last-seen-setup-instructions "1.4.0")
 
-
-
 ;; Multicurser
-
-
-
 (require 'multiple-cursors)
 (defhydra hydra-multiple-cursors (:hint nil)
 "
@@ -171,10 +169,6 @@ _C-S-y_: previos like this
 
 ;; Nicer window management with hydra
 ;; Found inspiration here: https://github.com/abo-abo/hydra/wiki/Window-Management
-
-;; I don't need winner at all I think
-;; (when (fboundp 'winner-mode)
-  ;; (winner-mode 1))
 
 (require 'windmove)
 
@@ -285,34 +279,10 @@ On error (read-only), quit without selecting."
 
 ;; Editing things
 
-;; Move lines up and down
-;; Found here: http://www.emacswiki.org/emacs/MoveLine
-
-(defun move-line (n)
-  "Move the current line up or down by N lines."
-  (interactive "p")
-  (setq col (current-column))
-  (beginning-of-line) (setq start (point))
-  (end-of-line) (forward-char) (setq end (point))
-  (let ((line-text (delete-and-extract-region start end)))
-    (forward-line n)
-    (insert line-text)
-    ;; restore point to original column in moved line
-    (forward-line -1)
-    (forward-char col)))
-
-(defun move-line-up (n)
-  "Move the current line up by N lines."
-  (interactive "p")
-  (move-line (if (null n) -1 (- n))))
-
-(defun move-line-down (n)
-  "Move the current line down by N lines."
-  (interactive "p")
-  (move-line (if (null n) 1 n)))
-
-(global-set-key (kbd "<C-M-up>") 'move-line-up)
-(global-set-key (kbd "<C-M-down>") 'move-line-down)
+;; move-lines
+(require 'move-lines)
+(global-set-key (kbd "C-M-<up>") 'move-lines-up)
+(global-set-key (kbd "C-M-<down>") 'move-lines-down)
 
 ;; Indentation
 ;; No tabs, only spaces
